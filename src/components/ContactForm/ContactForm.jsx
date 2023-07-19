@@ -1,30 +1,34 @@
-import React, { useState } from "react";
-import s from "./ContactForm.module.css";
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../redux/contactsSlice';
 
-const ContactForm = ({ onSubmit }) => {
+import s from './ContactForm.module.css';
+
+const ContactForm = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    name: "",
-    number: "",
+    name: '',
+    number: '',
   });
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     const { name, value } = event.target;
-    setFormData((prevFormData) => ({
+    setFormData(prevFormData => ({
       ...prevFormData,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault();
-    onSubmit(formData);
+    dispatch(addContact(formData));
     resetForm();
   };
 
   const resetForm = () => {
     setFormData({
-      name: "",
-      number: "",
+      name: '',
+      number: '',
     });
   };
 
