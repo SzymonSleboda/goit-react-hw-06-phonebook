@@ -1,18 +1,27 @@
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createSlice, createAction } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
+const initialState = [
+];
 
 export const addContact = createAction('contacts/addContact');
 export const deleteContact = createAction('contacts/deleteContact');
 
-
-const contactsReducer = createReducer([], builder => {
-  builder
-    .addCase(addContact, (state, action) => {
-      state.push(action.payload);
-    })
-    .addCase(deleteContact, (state, action) => {
-      return state.filter(contact => contact.id !== action.payload);
-    });
+const contactsSlice = createSlice({
+  name: 'contacts',
+  initialState,
+  reducers: {},
+  extraReducers: builder => {
+    builder
+      .addCase(addContact, (state, action) => {
+        state.push({ ...action.payload, id: uuidv4() });
+        localStorage.setItem('contacts', JSON.stringify(state));
+      })
+      .addCase(deleteContact, (state, action) => {
+        const contactId = action.payload;
+        return state.filter(contact => contact.id !== contactId);
+      });
+  },
 });
 
-export default contactsReducer;
+export default contactsSlice.reducer;
