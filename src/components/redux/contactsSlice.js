@@ -1,27 +1,40 @@
-import { createSlice, createAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-const initialState = [
-];
+const initialState = [];
 
-export const addContact = createAction('contacts/addContact');
-export const deleteContact = createAction('contacts/deleteContact');
+const loadContactsFromLocalStorage = () => {
+  try {
+    const contacts = localStorage.getItem('contacts');
+    return contacts ? JSON.parse(contacts) : [];
+  } catch (error) {
+    console.error('Error loading contacts from localStorage:', error);
+    return [];
+  }
+};
+
+const saveContactsToLocalStorage = contacts => {
+  try {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  } catch (error) {
+    console.error('Error saving contacts to localStorage:', error);
+  }
+};
 
 const contactsSlice = createSlice({
   name: 'contacts',
-  initialState,
-  reducers: {},
-  extraReducers: builder => {
-    builder
-      .addCase(addContact, (state, action) => {
-        state.push({ ...action.payload, id: uuidv4() });
-        localStorage.setItem('contacts', JSON.stringify(state));
-      })
-      .addCase(deleteContact, (state, action) => {
-        const contactId = action.payload;
-        return state.filter(contact => contact.id !== contactId);
-      });
+  initialState: loadContactsFromLocalStorage(),
+  reducers: {
+    addContact: (state, action) => {
+      state.push({ ...action.payload, id: uuidv4() });
+      saveContactsToLocalStorage(state);
+    },
+    deleteContact: (state, action) => {
+      const contactId = action.payload;
+      return state.filter(contact => contact.id !== contactId);
+    },
   },
 });
 
+export const { addContact, deleteContact } = contactsSlice.actions;
 export default contactsSlice.reducer;
