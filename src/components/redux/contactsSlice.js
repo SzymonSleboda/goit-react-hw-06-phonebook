@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-const initialState = [];
-
 const loadContactsFromLocalStorage = () => {
   try {
     const contacts = localStorage.getItem('contacts');
@@ -21,9 +19,11 @@ const saveContactsToLocalStorage = contacts => {
   }
 };
 
+const initialState = loadContactsFromLocalStorage(); 
+
 const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: loadContactsFromLocalStorage(),
+  initialState,
   reducers: {
     addContact: (state, action) => {
       state.push({ ...action.payload, id: uuidv4() });
